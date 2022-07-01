@@ -15,6 +15,8 @@ The contour levels for plotting each population are calculated by running saveCo
 
 The results are displayed by running plotPopulations.m
 
+The ML model is stored in lengthEstimationModel.mat.
+
 Dependencies:
 To run "plotPopulations.m", the "Violinplot-Matlab" library needs to be installed. It can be found under the following link:
 https://github.com/bastibe/Violinplot-Matlab
