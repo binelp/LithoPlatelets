@@ -1,0 +1,9 @@
+New Name                Old Name
+
+Sim_300x100x100         SimulationResults_L1_04112021_170429
+Sim_100x100x30          SimulationResults_L2_04112021_171558
+Sim_300x100x30          SimulationResults_L3_04112021_172750
+Sim_200x100x66          SimulationResults_L4_04112021_173854
+Sim_200x100x100         SimulationResults_L5_04112021_175005
+Sim_300x100x66          SimulationResults_L6_04112021_180129
+Sim_200x100x30          SimulationResults_L7_04112021_181249
