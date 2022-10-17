@@ -37,10 +37,6 @@ colors = { [214 100 11]./255,...
 [0 114 201]./255,...
 [11 51 212]./255};
 
-% Generate physical angles from uniformly distributed quaternions
-q = uniformSampledQuats(100000);
-randPhysAngles = getPhysicalAngles(q, [120,100,30], "uniformlyRandomPhysAngles.mat");
-
 % Load physical angles from data and results directory
 for kk = 1:7
     L = Ls{kk};
@@ -48,17 +44,11 @@ for kk = 1:7
     load(savePath)
     physAnglesCell{kk} = physicalAngles;
 end
-%% Contourplot experimetnal main part 
-% Binning
-nbins = 20;
-x = randPhysAngles.flowAngleVec;
-y = randPhysAngles.flowAnglePlane;
-% Obtain counts
-Xedges=linspace(0,90,nbins+1);
-Yedges=linspace(0,90,nbins+1);
-Nrand = histcounts2(x,y,Xedges,Yedges);
-Nrand = Nrand/nansum(Nrand,'all');
+%% Contourplots experimental main part and SI
 
+nbins = 20;
+% Get distribution of theta, and phi from uniform orientations
+Nrand = physAngleDistFromUniform(nbins,"sum");
 % Index for corresponding lihtoplatelet lengths
 parts = [6,5,4, 1, 2, 3, 7];
 
@@ -79,11 +69,11 @@ for ii = 1:7
     N = N/nansum(N,'all');
 
     N = N./Nrand;
+
     figs{ii} = figure;
     hold on;
     title(sprintf("L = [%i %i %i]",Ls{parts(ii)}(1),Ls{parts(ii)}(2),Ls{parts(ii)}(3)))
-    c = pink(100);
-    colormap(c(15:80,:));
+    newColormap()
     contourf(X,Y,N',levels,"ShowText","off")
     caxis([min(levels),max(levels)])
     tx = [2, 88,2,2];
@@ -94,6 +84,7 @@ for ii = 1:7
     xlabel("\theta")
     ylabel("\phi")
     ax = gca;
+    
     if ii == 1
         typeSetPlot(figs{ii}, 'single', 'noPADDING')
         f = 0.85;
@@ -113,78 +104,6 @@ for ii = 1:7
     set(figs{ii}, 'Position', [680 558 312*f 420.0000*f]);
     print(gcf,sprintf('angleDistContourColorbar%i.pdf',ii),'-dpdf');
 end
-
-%% Contourplot SI Experimental
-% Binning
-nbins = 20;
-x = randPhysAngles.flowAngleVec;
-y = randPhysAngles.flowAnglePlane;
-% Obtain counts
-Xedges=linspace(0,90,nbins+1);
-Yedges=linspace(0,90,nbins+1);
-Nrand = histcounts2(x,y,Xedges,Yedges);
-    Nrand = Nrand/nansum(Nrand,'all');
-
-% Index for corresponding lihtoplatelet lengths
-parts = [6,5,4, 1, 2, 3, 7];
-
-levels = 0:0.5:2.6;
-for ii = 1:7
-    % Binning
-    x = physAnglesCell{parts(ii)}.flowAngleVec;
-    y = physAnglesCell{parts(ii)}.flowAnglePlane;
-    % Create bins and obtain counts
-    Xedges=linspace(0,90,nbins+1);
-    Yedges=linspace(0,90,nbins+1);
-    N = histcounts2(x,y,Xedges,Yedges);
-    [X,Y] = meshgrid(linspace(0,90,nbins),...
-        linspace(0,90,nbins));
-    
-    % Tranform to make uniform uniform
-    N = N/nansum(N,'all');
-
-    N = N./Nrand;
-    max(N,[],'all')
-    sum(N>10,'all')/length(N)
-
-    % Create countor, transponsing N so rows correspond to Y and columns correspond to X
-    figs{ii} = figure;
-    hold on;
-
-    title(sprintf("L = [%i %i %i]",Ls{parts(ii)}(1),Ls{parts(ii)}(2),Ls{parts(ii)}(3)))
-    c = pink(100);
-    colormap(c(15:80,:));
-    contourf(X,Y,N',levels,"ShowText","off")
-    caxis([min(levels),max(levels)])
-    tx = [2, 88,2,2];
-    ty = [88,2,2,88];
-    fill(tx,ty,'w', 'EdgeAlpha', 0 )
-    xlim([0,90])
-    ylim([0,90])
-    xlabel("\theta")
-    ylabel("\phi")
-    ax = gca;
-    if ii == 1
-        typeSetPlot(figs{ii}, 'single', 'noPADDING')
-        f = 0.85;
-        set(ax,'PlotBoxAspectRatio',[ 1.0679    1.0000    1.0000]);
-        set(figs{ii}, 'Position', [680 558 312*f 420.0000*f]);
-        
-    else
-        typeSetPlot(figs{ii}, 'half', 'noPADDING')
-        set(ax,'PlotBoxAspectRatio',[ 1.0000    0.9364    0.9364]);
-        set(figs{ii},'Position',[377 441 156 157]);
-    end
-    newColormap()
-    print(gcf,sprintf('angleDistContour%i.pdf',ii),'-dpdf');
-    
-    h = colorbar;
-    h.Limits = [min(levels),max(levels)];
-    newColormap()
-    set(figs{ii}, 'Position', [680 558 312*f 420.0000*f]);
-    print(gcf,sprintf('angleDistContourColorbar%i.pdf',ii),'-dpdf');
-end
-
 %% Contourplot from Simulations Supplementary Information
 % Paths to files obtained from the angle estimation simulation
 files = {};
